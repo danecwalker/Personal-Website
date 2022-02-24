@@ -1,0 +1,98 @@
+#container {
+  padding: 4rem;
+  padding-top: 10.5rem;
+  width: 100%;
+  max-width: 120rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: calc(100vh - 10.5rem);
+}
+
+#loader {
+  position: absolute;
+  top: 10.5rem;
+  left: 0%;
+  background-color: #fff;
+  width: 100%;
+  height: calc(100% - 10.5rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10.5rem;
+}
+
+#intro {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+#intro h3 {
+  font-weight: 300;
+}
+
+#latest h2 {
+  font-weight: normal;
+  text-align: center;
+  margin-top: 12rem;
+}
+
+#projects {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+#project {
+  width: 100%;
+  padding: 2rem;
+  border-radius: 2rem;
+  border: 1px solid #000;
+  background-color: #fff;
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='33' height='40' viewport='0 0 100 100' style='fill:black;font-size:20px;'><text y='50%'>👀</text></svg>")
+      8 10, auto;
+
+  transition: all ease-out 200ms;
+}
+
+#project:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+#project h3, #project p {
+  font-weight: normal;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+#project p {
+  margin-bottom: 4rem;
+}
+
+#project p#language_badge {
+  margin: 0;
+}
+
+p#language_badge {
+  display: inline-block;
+  font-size: 1.2rem;
+  padding: 0.8rem 1.6rem;
+  background-color: #3572A533;
+  color: #3572A5;
+  border-radius: 20rem;
+  border: 1px solid #3572A5;
+}
+
+#footer {
+  font-family: 'Roboto';
+  padding: 4rem;
+  width: 100%;
+  background-color: #fff;
+  text-align: center;
+}
+
+#footer p {
+  width: 100%;
+  margin: 0 auto;
+
+}

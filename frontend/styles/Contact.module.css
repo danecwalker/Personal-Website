@@ -1,0 +1,39 @@
+#container {
+  padding: 4rem;
+  padding-top: 10.5rem;
+  width: 100%;
+  max-width: 120rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: calc(100vh - 10.5rem);
+}
+
+#intro {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+#intro h3 {
+  font-weight: 300;
+}
+
+#latest h2 {
+  font-weight: normal;
+  text-align: center;
+  margin-top: 12rem;
+}
+
+
+#footer {
+  font-family: 'Roboto';
+  padding: 4rem;
+  width: 100%;
+  background-color: #fff;
+  text-align: center;
+}
+
+#footer p {
+  width: 100%;
+  margin: 0 auto;
+
+}
