@@ -1,22 +1,25 @@
-import styles from '../styles/NavBar.module.css'
-import {GithubFill, LinkedinBoxFill} from 'akar-icons'
+import styles from '../styles/Navbar.module.css'
 
-function NavBar() {
+import Link from 'next/link'
+
+function Navbar() {
   return (
-    <nav id={styles.navBar}>
-      <ul id={styles.links}>
-        <ul id={styles.sublinks}>
-          <li id={styles.int_link}><a href="/projects">Projects</a></li>
-          <li id={styles.int_link}><a href="/contact">Contact</a></li>
-        </ul>
-        <li id={styles.name}><a href="/">Dane Walker</a></li>
-        <ul id={styles.sublinks}>
-          <li id={styles.ext_link}><a href="https://github.com/danecwalker" target="_blank" rel="noopener noreferrer"><GithubFill id={styles.test}/></a></li>
-          <li id={styles.ext_link}><a href="https://www.linkedin.com/in/danecwalker/" target="_blank" rel="noopener noreferrer"><LinkedinBoxFill /></a></li>
-        </ul>
-      </ul>
+    <nav id={styles.nav}>
+      <div id={styles.nav_links}>
+        <div id={styles.nav_group_a}>
+          <div id={styles.nav_link}><Link href="#">Projects</Link></div>
+          <div id={styles.nav_link}><Link href="#">Contact</Link></div>
+        </div>
+        <div id={styles.nav_group_b}>
+          <div id={styles.nav_link}><Link href="#">Dane Walker</Link></div>
+        </div>
+        <div id={styles.nav_group_c}>
+          <div id={styles.nav_link}><Link href="#">Github</Link></div>
+          <div id={styles.nav_link}><Link href="#">Linkedin</Link></div>
+        </div>
+      </div>
     </nav>
   )
 }
 
-export default NavBar;
+export default Navbar

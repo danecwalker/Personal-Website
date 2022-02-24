@@ -7,19 +7,16 @@ body {
   font-family: 'Roboto', sans-serif;
   font-family: 'Roboto Slab', serif;
   font-size: 10px;
-  min-height: 100vh;
 }
 
-@media screen and (max-width: 756px) {
-  html, body {
-    font-size: 8px;
-  }
+body {
+  background-color: #fff;
+  color: #000;
 }
 
-@media screen and (max-width: 420px) {
-  html, body {
-    font-size: 6px;
-  }
+body[data-dark-theme] {
+  background-color: #161616;
+  color: #fff;
 }
 
 a {
@@ -31,30 +28,10 @@ a {
   box-sizing: border-box;
 }
 
-h1 {
-  font-size: 4.8rem;
-}
-
-h2 {
-  font-size: 3.6rem;
-}
-
-h3 {
-  font-size: 2.4rem;
-}
-
-h4 {
-  font-size: 1.8rem;
-}
-
-h5 {
-  font-size: 1.6rem;
-}
-
-h6 {
-  font-size: 1.4rem;
-}
-
-p {
-  font-size: 1.4rem;
-}
+h1 { font-size: 4.8rem; }
+h2 { font-size: 3.6rem; }
+h3 { font-size: 2.4rem; }
+h4 { font-size: 1.8rem; }
+h5 { font-size: 1.6rem; }
+h6 { font-size: 1.4rem; }
+p { font-size: 1.4rem; }
