@@ -35,6 +35,7 @@ func main() {
 
 	v1.Get("/repos/latest/:name?", helpers.LatestRepos)
 	v1.Get("/repos/latest/:name/img", helpers.RepoImage)
+	v1.Get("/repos/latest/:name/code", helpers.RepoCode)
 
 	app.Listen(":4000")
 }

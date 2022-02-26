@@ -2,24 +2,33 @@ import styles from '../styles/Navbar.module.css'
 
 import Link from 'next/link'
 import {GithubFill, LinkedinBoxFill} from 'akar-icons'
-import {useRef, useEffect} from 'react'
+import {useRef, useEffect, useState} from 'react'
 
 function Navbar() {
 
   const nav = useRef()
 
-  const handleScroll = () => {
+  const [showShadow, setShowShadow] = useState(false)
+
+  const target = useRef();
+
+  const handleScroll = (e) => {
+    if (window.scrollY >= target.current) {
+      setShowShadow(true)
+    } else if (window.scrollY < target.current) {
+      setShowShadow(false)
+    }
 
   }
 
   useEffect(() => {
-    console.log(nav)
-
+    target.current = nav.current.clientHeight * 0.5
+    window.addEventListener('scroll', handleScroll);
   }, [])
   
 
   return (
-    <nav ref={nav} id={styles.nav}>
+    <nav ref={nav} id={[styles.nav]} className={showShadow ? styles.navShadow : null}>
       <div id={styles.nav_links}>
         <div id={styles.nav_group_a}>
           <div id={styles.nav_link}><Link href="/projects">Projects</Link></div>

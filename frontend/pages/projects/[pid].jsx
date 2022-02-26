@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from '../../styles/ProjectPage.module.css'
 import Image from 'next/image'
 import { Triangle } from 'react-loader-spinner'
@@ -11,26 +11,13 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
 
 function ProjectPage() {
 
-  const code = `
-  usage: MNet.py [-h] [-t] [-lr LEARNING_RATE] [-e EPOCHS] [-b BATCH] [-m MODEL]
-
-  optional arguments:
-    -h, --help            show this help message and exit
-    -t, --train           Train model
-    -lr LEARNING_RATE, --learning-rate LEARNING_RATE
-                          Train learning rate
-    -e EPOCHS, --epochs EPOCHS
-                          Number of epochs to train
-    -b BATCH, --batch BATCH
-                          Batch size
-    -m MODEL, --model MODEL
-                          Model number
-  `
+  const [code, setCode] = useState({})
 
   const router = useRouter()
   const {pid} = router.query
   const [project, setProject] = useState({})
   const [loading, setLoading] = useState(true)
+  const [loadedImage, setLoadedImage] = useState("false")
 
   useEffect(() => {
     async function fetchData() {
@@ -46,9 +33,22 @@ function ProjectPage() {
       }
     }
 
+    async function fetchDataCode() {
+      try {
+        const res = await fetch(`http://localhost:4000/api/v1/repos/latest/${pid}/code`)
+        const json = await res.json()
+        if (res.status === 200) {
+          setCode(json)
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
     fetchData()
+    fetchDataCode()
   }, [loading, pid])
-  
 
   return (
     <div id={styles.container}>
@@ -69,26 +69,28 @@ function ProjectPage() {
           <Link href={project?.html_url || "#"}><a target="_blank" rel="noopener noreferrer"><h4>{project?.html_url}</h4></a></Link>
           <Link href={project?.homepage || "#"}><a target="_blank" rel="noopener noreferrer"><h4>{project?.homepage}</h4></a></Link>
         </div>
-        {project?.raw_image ? 
-        project?.raw_image === "" ? null :
-        <div id={styles.shot}>
-          <Image loader={() => project?.raw_image} src={project?.raw_image} alt="" layout="fill" objectFit="contain" objectPosition="top"/>
-        </div>
-        : 
-        <div id={styles.loader}>
+        
+        {loadedImage === "false" ? <div id={styles.loader}>
           <Triangle 
             height="100"
             width="100"
             color='black'
             ariaLabel='loading'
             />
-        </div>}
+        </div> : null }
 
+        {loadedImage === "error" ? null : <div id={[styles.shot]}>
+          {project.raw_image ? <Image onLoadingComplete={()=>{console.log("loaded");setLoadedImage("true")}} onError={()=>{console.log('error');setLoadedImage("error")}} loader={() => project?.raw_image} src={project?.raw_image} alt="" layout="fill" objectFit="contain" objectPosition="top" unoptimized/> : null}
+        </div> }
+
+
+        {code?.code ? 
         <div id={styles.codeEditor}>
           <SyntaxHighlighter language="bash" style={ atomOneDark } id={styles.syntaxHighlighter} wrapLongLines showLineNumbers>
-            {code}
+            {code?.code}
           </SyntaxHighlighter>
         </div>
+        : null}
       </main>
 
     </div>

@@ -1,12 +1,14 @@
 package helpers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -137,7 +139,7 @@ func saveImage(url string, name string) []byte {
 	}
 	defer response.Body.Close()
 
-	file, err := os.Create(fmt.Sprintf("./raw/%s.jpg", name))
+	file, err := os.Create(fmt.Sprintf("./raw/%s.png", name))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -157,7 +159,7 @@ func saveImage(url string, name string) []byte {
 }
 
 func fetchImage(base string, name string) ([]byte, *fiber.Map) {
-	img, err := os.ReadFile(fmt.Sprintf("./raw/%s.jpg", name))
+	img, err := os.ReadFile(fmt.Sprintf("./raw/%s.png", name))
 	if err == nil {
 		return img, nil
 	}
@@ -214,6 +216,104 @@ func RepoImage(c *fiber.Ctx) error {
 				return c.Status(500).JSON(err)
 			}
 			return c.Send(img)
+		}
+	}
+	return c.Status(500).JSON(err)
+}
+
+func saveCode(code string, name string) string {
+
+	var newCode string
+
+	for _, line := range strings.Split(code, "\n") {
+		lineDec, err := base64.RawStdEncoding.DecodeString(line)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		newCode += string(lineDec)
+	}
+
+	r := regexp.MustCompile("```[a-z]*\\n([\\s\\S]*?)\\n```")
+	c := r.FindStringSubmatch(newCode)
+	if len(c) > 1 {
+		newCode = c[1]
+	}
+
+	file, err := os.Create(fmt.Sprintf("./snippets/%s.md", name))
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(newCode))
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return newCode
+}
+
+func fetchCode(base string, name string) (string, *fiber.Map) {
+	code, err := os.ReadFile(fmt.Sprintf("./snippets/%s.md", name))
+	if err == nil {
+		return string(code), nil
+	}
+
+	resp, err := http.Get(base)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var result map[string]interface{}
+	json.Unmarshal(body, &result)
+
+	if result == nil {
+		return "", &fiber.Map{
+			"error": "Oh no",
+		}
+	}
+
+	return saveCode(fmt.Sprint(result["content"]), name), nil
+}
+
+func RepoCode(c *fiber.Ctx) error {
+	var results Repos
+	err := GetEntry("repos", &results)
+
+	switch {
+	case err == redis.Nil:
+		fmt.Println("key does not exist")
+		results, err = fetchRepos()
+		if err != nil {
+			return c.Status(500).JSON(&fiber.Map{
+				"error": err.Error(),
+			})
+		}
+	case err != nil:
+		fmt.Println("Get failed", err)
+		return c.Status(500).JSON(&fiber.Map{
+			"error": "unsuccessful",
+		})
+	case results == nil:
+		fmt.Println("value is empty")
+	}
+
+	for _, repo := range results {
+		if repo.Name == c.Params("name") {
+			code, err := fetchCode(strings.Replace(repo.ContentsUrl, "{+path}", "README.md", 1), repo.Name)
+			if err != nil {
+				return c.Status(500).JSON(err)
+			}
+			return c.JSON(&fiber.Map{
+				"code": code,
+			})
 		}
 	}
 	return c.Status(500).JSON(err)

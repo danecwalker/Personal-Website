@@ -10,6 +10,11 @@
   align-items: center;
   background-color: #fff;
   z-index: 100;
+  box-shadow: 0 0 0rem rgba(0,0,0,0.2);
+  transition: all 200ms ease-out;
+}
+
+#nav.navShadow {
   box-shadow: 0 0 2rem rgba(0,0,0,0.2);
 }
 
