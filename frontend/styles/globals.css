@@ -35,3 +35,8 @@ h4 { font-size: 1.8rem; }
 h5 { font-size: 1.6rem; }
 h6 { font-size: 1.4rem; }
 p { font-size: 1.4rem; }
+
+#vspace {
+  min-height: 0;
+  height: 100%;
+}

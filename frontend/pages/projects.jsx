@@ -1,21 +1,21 @@
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
+import { Triangle } from 'react-loader-spinner'
 import Project from '../components/project'
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Projects.module.css'
 
-function Home() {
+function Projects() {
 
-  const [latest, setLatest] = useState([])
+  const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
-
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:4000/api/v1/repos/latest?limit=4")
+        const res = await fetch("http://localhost:4000/api/v1/repos/latest")
         const json = await res.json()
         if (res.status === 200) {
-          setLatest(json)
+          setProjects(json)
           setLoading(false)
         }
       } catch (error) {
@@ -26,9 +26,7 @@ function Home() {
     if (loading) {
       fetchData()
     }
-
-  }, [loading, latest])
-  
+  })
 
   return (
     <div id={styles.container}>
@@ -40,19 +38,26 @@ function Home() {
 
       <main id={styles.main}>
         <div id={styles.header}>
-          <h1>Dane Walker</h1>
-          <h3>Mechatronics Engineering / Computer Science Student</h3>
-          <h3>Based in 📍 Brisbane, Australia</h3>
+          <h1>Projects 🚀</h1>
         </div>
 
         <div id={styles.latest}>
-          <h3>Latest</h3>
-
-          <div id={styles.latest_projects}>
-            {latest?.map((project, idx) => (
-              <Project key={idx} item={project} />
-            ))}
-          </div>
+          { loading ?
+            <div>
+              <Triangle 
+                height="100"
+                width="100"
+                color='black'
+                ariaLabel='loading'
+                />
+            </div>
+            :
+            <div id={styles.latest_projects}>
+              {projects?.map((project, idx) => (
+                <Project key={idx} item={project} />
+              ))}
+            </div>
+          }
         </div>
       </main>
 
@@ -60,4 +65,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Projects
