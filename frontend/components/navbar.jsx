@@ -29,8 +29,8 @@ function Navbar() {
           <div id={styles.nav_link}><Link href="/">Dane Walker</Link></div>
         </div>
         <div id={styles.nav_group_c}>
-          <div id={styles.nav_link}><Link href="#"><GithubFill strokeWidth={2} size={20} /></Link></div>
-          <div id={styles.nav_link}><Link href="#"><LinkedinBoxFill strokeWidth={2} size={20} /></Link></div>
+          <div id={styles.nav_link}><Link href="https://github.com/danecwalker"><a><GithubFill strokeWidth={2} size={20} /></a></Link></div>
+          <div id={styles.nav_link}><Link href="https://www.linkedin.com/in/danecwalker/"><a><LinkedinBoxFill strokeWidth={2} size={20} /></a></Link></div>
         </div>
       </div>
     </nav>
