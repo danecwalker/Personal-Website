@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
@@ -184,7 +183,7 @@ func fetchImage(base string, name string) ([]byte, *fiber.Map) {
 		}
 	}
 
-	return saveImage(fmt.Sprint(results[rand.Intn(len(results)-1)]["download_url"]), name), nil
+	return saveImage(fmt.Sprint(results[0]["download_url"]), name), nil
 }
 
 func RepoImage(c *fiber.Ctx) error {
@@ -221,43 +220,48 @@ func RepoImage(c *fiber.Ctx) error {
 	return c.Status(500).JSON(err)
 }
 
-func saveCode(code string, name string) string {
+func saveCode(code string, name string) *fiber.Map {
 
+	var out *fiber.Map
 	var newCode string
 
-	for _, line := range strings.Split(code, "\n") {
-		lineDec, err := base64.RawStdEncoding.DecodeString(line)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		newCode += string(lineDec)
+	newCodeB, err := base64.RawStdEncoding.DecodeString(strings.Replace(code, "\n", "", -1))
+	if err != nil {
+		fmt.Println(err)
 	}
+	newCode = string(newCodeB)
 
-	r := regexp.MustCompile("```[a-z]*\\n([\\s\\S]*?)\\n```")
+	r := regexp.MustCompile("```([a-z]*)\\n([\\s\\S]*?)\\n```")
 	c := r.FindStringSubmatch(newCode)
-	if len(c) > 1 {
-		newCode = c[1]
+	if len(c) > 2 {
+		out = &fiber.Map{
+			"code": c[2],
+			"lang": c[1],
+		}
 	}
 
-	file, err := os.Create(fmt.Sprintf("./snippets/%s.md", name))
+	file, err := os.Create(fmt.Sprintf("./snippets/%s.json", name))
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer file.Close()
 
-	_, err = file.Write([]byte(newCode))
+	outB, _ := json.Marshal(out)
+	_, err = file.Write(outB)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	return newCode
+	return out
 }
 
-func fetchCode(base string, name string) (string, *fiber.Map) {
-	code, err := os.ReadFile(fmt.Sprintf("./snippets/%s.md", name))
+func fetchCode(base string, name string) *fiber.Map {
+	code, err := os.ReadFile(fmt.Sprintf("./snippets/%s.json", name))
 	if err == nil {
-		return string(code), nil
+		var out *fiber.Map
+		json.Unmarshal(code, &out)
+
+		return out
 	}
 
 	resp, err := http.Get(base)
@@ -275,12 +279,12 @@ func fetchCode(base string, name string) (string, *fiber.Map) {
 	json.Unmarshal(body, &result)
 
 	if result == nil {
-		return "", &fiber.Map{
+		return &fiber.Map{
 			"error": "Oh no",
 		}
 	}
 
-	return saveCode(fmt.Sprint(result["content"]), name), nil
+	return saveCode(fmt.Sprint(result["content"]), name)
 }
 
 func RepoCode(c *fiber.Ctx) error {
@@ -307,13 +311,8 @@ func RepoCode(c *fiber.Ctx) error {
 
 	for _, repo := range results {
 		if repo.Name == c.Params("name") {
-			code, err := fetchCode(strings.Replace(repo.ContentsUrl, "{+path}", "README.md", 1), repo.Name)
-			if err != nil {
-				return c.Status(500).JSON(err)
-			}
-			return c.JSON(&fiber.Map{
-				"code": code,
-			})
+			code := fetchCode(strings.Replace(repo.ContentsUrl, "{+path}", "README.md", 1), repo.Name)
+			return c.JSON(code)
 		}
 	}
 	return c.Status(500).JSON(err)

@@ -86,7 +86,7 @@ function ProjectPage() {
 
         {code?.code ? 
         <div id={styles.codeEditor}>
-          <SyntaxHighlighter language="bash" style={ atomOneDark } id={styles.syntaxHighlighter} wrapLongLines showLineNumbers>
+          <SyntaxHighlighter language={code?.lang} style={ atomOneDark } id={styles.syntaxHighlighter} wrapLongLines showLineNumbers>
             {code?.code}
           </SyntaxHighlighter>
         </div>
