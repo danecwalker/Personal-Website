@@ -79,7 +79,7 @@ func fetchRepos() (Repos, error) {
 	json.Unmarshal(body, &results)
 	// fmt.Println(results)
 
-	err = SetEntry("repos", results, time.Hour*24)
+	err = SetEntry("repos", results, time.Minute*30)
 	if err != nil {
 		fmt.Println(err)
 	}
